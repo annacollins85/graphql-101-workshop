@@ -19,6 +19,7 @@ const typeDefs = gql`
 
   type Subscription {
     post: Post!
+    comment(postId: ID!): Comment!
   }
 
   input CreateUserInput {
@@ -133,6 +134,8 @@ const resolvers = {
       }
       db.comments.push(comment)
 
+      pubsub.publish(`comment ${data.post}`, { comment })
+
       return comment
     }
   },
@@ -140,6 +143,11 @@ const resolvers = {
     post: {
       subscribe(_, __) {
         return pubsub.asyncIterator(["post"])
+      }
+    },
+    comment: {
+      subscribe(_, { postId }, { pubsub }) {
+        return pubsub.asyncIterator(`comment ${postId}`);
       }
     }
   },
