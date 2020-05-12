@@ -24,8 +24,9 @@
 
 # Part 2
 
-1. Create a new mutation `createPost` with the required arguments
-2. Create a resolver for `createPost`. Make sure to check that an author exists for the author id argument.
-3. If you haven't used an `input` type in the `typeDefs`, refactor your code to use one.
-4. Test your code by creating some users. (Remember, since we are not writing to a database or file, once you refresh the server, the newly created users will have disappeared)
-5. Repeat steps 1 to 4 for `createComment`
+1. Try creating some users
+2. Create a new mutation `createPost` with the required arguments
+3. Create a resolver for `createPost`. Make sure to check that an author exists for the author id argument.
+4. If you haven't used an `input` type in the `typeDefs`, refactor your code to use one.
+5. Test your code by creating some posts. (Remember, since we are not writing to a database or file, once you refresh the server, the newly created users will have disappeared)
+6. Repeat steps 1 to 4 for `createComment`
