@@ -1,6 +1,6 @@
 import { ApolloServer, gql } from 'apollo-server'
 import uuid from 'uuid/v4'
-import db from "./db";
+import db from "./db"
 
 const typeDefs = gql`
   type Query {
@@ -43,15 +43,15 @@ const typeDefs = gql`
     author: User!
     post: Post!
 }
-`;
+`
 
 const resolvers = {
   Query: {
     users() {
-      return db.users;
+      return db.users
     },
     posts() {
-      return db.posts;
+      return db.posts
     },
     user(_, args) {
       return db.users.find(user => user.id === args.id)
@@ -80,37 +80,37 @@ const resolvers = {
 	},
   User: {
     posts(user) {
-      return db.posts.filter(post => post.author === user.id);
+      return db.posts.filter(post => post.author === user.id)
     },
     comments(user) {
-      return db.comments.filter(comment => comment.author === user.id);
+      return db.comments.filter(comment => comment.author === user.id)
     }
   },
 
   Post: {
     author(post) {
-      return db.users.find(user => user.id === post.author);
+      return db.users.find(user => user.id === post.author)
     },
     comments(post) {
-      return db.comments.filter(comment => comment.post === post.id);
+      return db.comments.filter(comment => comment.post === post.id)
     }
   },
 
   Comment: {
     post(comment) {
-      return db.posts.find(post => post.id === comment.post);
+      return db.posts.find(post => post.id === comment.post)
     },
     author(comment) {
-      return db.users.find(user => user.id === comment.author);
+      return db.users.find(user => user.id === comment.author)
     }
   }
-};
+}
 
 const server = new ApolloServer({
   typeDefs,
   resolvers
-});
+})
 
 server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
+  console.log(`🚀  Server ready at ${url}`)
+})
