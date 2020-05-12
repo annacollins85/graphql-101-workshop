@@ -1,6 +1,5 @@
 {
     "presets": [
-        "env",
-        "@babel/plugin-transform-destructuring"
+        "env"
     ]
 }
