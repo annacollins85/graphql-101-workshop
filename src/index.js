@@ -1,4 +1,5 @@
 import { ApolloServer, gql } from 'apollo-server'
+import uuid from 'uuid/v4'
 import db from "./db";
 
 const typeDefs = gql`
@@ -6,6 +7,16 @@ const typeDefs = gql`
     users: [User!]!
     posts: [Post!]!
     user(id: ID!): User
+    post(id: ID!): Post
+  }
+  type Mutation {
+    createUser(data: CreateUserInput!): User!
+  }
+
+  input CreateUserInput {
+    name: String!
+    email: String!
+    age: Int
   }
 
   type User {
@@ -13,6 +24,8 @@ const typeDefs = gql`
     email: String!
     age: Int
     id: ID!
+    posts: [Post!]!
+    comments: [Comment!]!
   }
 
   type Post {
@@ -21,7 +34,15 @@ const typeDefs = gql`
     id: ID!
     published: Boolean!
     author: User!
+    comments: [Comment!]!
   }
+
+  type Comment {
+    id: ID!
+    text: String!
+    author: User!
+    post: Post!
+}
 `;
 
 const resolvers = {
@@ -29,18 +50,58 @@ const resolvers = {
     users() {
       return db.users;
     },
-
     posts() {
       return db.posts;
     },
     user(_, args) {
       return db.users.find(user => user.id === args.id)
+    },
+    post(_, args) {
+      return db.posts.find(post => post.id === args.id)
+    }
+  },
+  Mutation: {
+		createUser (_, args) {
+      const emailTaken = db.users.find(user => user.email === args.data.email)
+
+      if (emailTaken) throw new Error('Email already taken')
+
+      const user = {
+        id: uuid(),
+        email: args.data.email,
+        name: args.data.name,
+        age: args.data.age
+      }
+
+      db.users.push(user)
+
+      return user
+    }
+	},
+  User: {
+    posts(user) {
+      return db.posts.filter(post => post.author === user.id);
+    },
+    comments(user) {
+      return db.comments.filter(comment => comment.author === user.id);
     }
   },
 
   Post: {
     author(post) {
       return db.users.find(user => user.id === post.author);
+    },
+    comments(post) {
+      return db.comments.filter(comment => comment.post === post.id);
+    }
+  },
+
+  Comment: {
+    post(comment) {
+      return db.posts.find(post => post.id === comment.post);
+    },
+    author(comment) {
+      return db.users.find(user => user.id === comment.author);
     }
   }
 };
