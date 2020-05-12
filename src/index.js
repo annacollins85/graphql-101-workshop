@@ -1,5 +1,5 @@
 import { ApolloServer, gql } from 'apollo-server'
-import db from "./db";
+import db from "./db"
 
 const typeDefs = gql`
   type Query {
@@ -22,16 +22,15 @@ const typeDefs = gql`
     published: Boolean!
     author: User!
   }
-`;
+`
 
 const resolvers = {
   Query: {
     users() {
-      return db.users;
+      return db.users
     },
-
     posts() {
-      return db.posts;
+      return db.posts
     },
     user(_, args) {
       return db.users.find(user => user.id === args.id)
@@ -40,16 +39,16 @@ const resolvers = {
 
   Post: {
     author(post) {
-      return db.users.find(user => user.id === post.author);
+      return db.users.find(user => user.id === post.author)
     }
   }
-};
+}
 
 const server = new ApolloServer({
   typeDefs,
   resolvers
-});
+})
 
 server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
+  console.log(`🚀  Server ready at ${url}`)
+})
