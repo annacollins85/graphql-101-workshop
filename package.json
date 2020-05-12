@@ -16,7 +16,6 @@
     "graphql": "^15.0.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-destructuring": "^7.9.5",
     "nodemon": "^1.17.5"
   }
 }
