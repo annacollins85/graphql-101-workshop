@@ -1,6 +1,8 @@
-import { ApolloServer, gql } from 'apollo-server'
+import { ApolloServer, gql, PubSub } from 'apollo-server'
 import uuid from 'uuid/v4'
 import db from "./db"
+
+const pubsub = new PubSub()
 
 const typeDefs = gql`
   type Query {
@@ -13,6 +15,10 @@ const typeDefs = gql`
     createUser(data: CreateUserInput!): User!
     createPost(data: CreatePostInput!): Post!
     createComment(data: CreateCommentInput!): Comment!
+  }
+
+  type Subscription {
+    post: Post!
   }
 
   input CreateUserInput {
@@ -106,6 +112,8 @@ const resolvers = {
       }
       db.posts.push(post)
       
+      pubsub.publish("post", { post })
+      
       return post
     },
     createComment(_, { data }) {
@@ -127,7 +135,14 @@ const resolvers = {
 
       return comment
     }
-	},
+  },
+  Subscription: {
+    post: {
+      subscribe(_, __) {
+        return pubsub.asyncIterator(["post"])
+      }
+    }
+  },
   User: {
     posts(user) {
       return db.posts.filter(post => post.author === user.id)

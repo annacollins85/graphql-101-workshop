@@ -30,3 +30,9 @@
 4. If you haven't used an `input` type in the `typeDefs`, refactor your code to use one.
 5. Test your code by creating some posts. (Remember, since we are not writing to a database or file, once you refresh the server, the newly created users will have disappeared)
 6. Repeat steps 1 to 4 for `createComment`
+
+# Part 3
+
+1. Try subscribing to the `post` subscription and then creating a new post to receive an update.
+2. Create a subscription `comment` that takes an argument `postId` which will notify of a new comment published for a given post. Remember, you can pass any string into the PubSub `asyncIterator` method, so you can pass the `postId` somewhere in there.
+3. Try subscribing to your new `comment` subscription for one of your posts. Then create a comment for it.
