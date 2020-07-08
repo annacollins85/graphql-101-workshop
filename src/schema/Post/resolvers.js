@@ -2,16 +2,16 @@ import uuid from 'uuid/v4'
 
 const resolvers = {
   Query: {
-    posts(_, __, { db }) {
-      return db.posts
+    posts(_, __, { dataSources }) {
+      return dataSources.db.getPosts()
     },
-    post(_, args, { db }) {
-      return db.posts.find(post => post.id === args.id)
+    post(_, args, { dataSources }) {
+      return dataSources.db.getPost(args.id)
     }
   },
   Mutation: {
-    createPost(_, { data }, { db, pubsub }) {
-      const author = db.users.find(user => user.id === data.author)
+    createPost(_, { data }, { dataSources, pubsub }) {
+      const author = dataSources.db.getUser(data.author)
       if (!author) {
         throw new Error(`No user found for ID ${data.author}`)
       }
@@ -22,18 +22,18 @@ const resolvers = {
         published: data.published,
         author: data.author
       }
-      db.posts.push(post)
+      dataSources.db.createPost(post)
       
       pubsub.publish("post", { post })
       
       return post
     },
-    createComment(_, { data }, { db, pubsub }) {
-      const author = db.users.find(user => user.id === data.author)
+    createComment(_, { data }, { dataSources, pubsub }) {
+      const author = dataSources.db.getUser(data.author)
       if (!author) {
         throw new Error(`No user found for ID ${data.author}`)
       }
-      const post = db.posts.find(post => post.id === data.post)
+      const post = dataSources.db.getPost(data.post)
       if (!post) {
         throw new Error(`No post found for ID ${data.post}`)
       }
@@ -43,7 +43,7 @@ const resolvers = {
         post: data.post,
         author: data.author
       }
-      db.comments.push(comment)
+      dataSources.db.createComment(comment)
 
       pubsub.publish(`comment ${data.post}`, { comment })
 
@@ -63,20 +63,20 @@ const resolvers = {
     }
   },
   Post: {
-    author(post, _, { db }) {
-      return db.users.find(user => user.id === post.author)
+    author(post, _, { dataSources }) {
+      return dataSources.db.getUser(post.author)
     },
-    comments(post, _, { db }) {
-      return db.comments.filter(comment => comment.post === post.id)
+    comments(post, _, { dataSources }) {
+      return dataSources.db.getPostComments(post.id)
     }
   },
 
   Comment: {
-    post(comment, _, { db }) {
-      return db.posts.find(post => post.id === comment.post)
+    post(comment, _, { dataSources }) {
+      return dataSources.db.getPost(comment.post)
     },
-    author(comment, _, { db }) {
-      return db.users.find(user => user.id === comment.author)
+    author(comment, _, { dataSources }) {
+      return dataSources.db.getUser(comment.author)
     }
   }
 }

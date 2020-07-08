@@ -7,6 +7,7 @@ import {
 } from 'apollo-server'
 
 import db from "./db"
+import { DB } from "./data-sources/db";
 import User from './schema/User/schema'
 import userResolvers from './schema/User/resolvers'
 import Post from './schema/Post/schema'
@@ -28,6 +29,9 @@ const server = new ApolloServer({
   schema: makeExecutableSchema({
     typeDefs: [baseTypeDefs, Post, User],
     resolvers: merge(postResolvers, userResolvers),
+  }),
+  dataSources: () => ({
+    db: new DB(db),
   }),
   context: {
     db,

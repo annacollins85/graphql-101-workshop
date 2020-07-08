@@ -2,17 +2,17 @@ import uuid from 'uuid/v4'
 
 const resolvers = {
   Query: {
-    users(_, __, { db }) {
-      return db.users
+    users(_, __, { dataSources }) {
+      return dataSources.db.getUsers()
     },
-    user(_, args, { db }) {
-      return db.users.find(user => user.id === args.id)
+    user(_, args, { dataSources }) {
+      return dataSources.db.getUser(args.id)
     }
   },
   Mutation: {
-		createUser (_, { data }, { db }) {
-      const emailTaken = db.users.find(user => user.email === data.email)
-      if (emailTaken) {
+		createUser (_, { data }, { dataSources }) {
+      const existingUser = dataSources.db.getUserByEmail(email)
+      if (existingUser) {
         throw new Error('Email already taken')
       }
 
@@ -22,17 +22,17 @@ const resolvers = {
         name: data.name,
         age: data.age
       }
-      db.users.push(user)
+      dataStores.db.createUser(user)
 
       return user
     }
   },
   User: {
-    posts(user, _, { db }) {
-      return db.posts.filter(post => post.author === user.id)
+    posts(user, _, { dataSources }) {
+      return dataSources.db.getUserPosts(user.id)
     },
-    comments(user, _, { db }) {
-      return db.comments.filter(comment => comment.author === user.id)
+    comments(user, _, { dataSources }) {
+      return dataSources.db.getUserComments(user.id)
     }
   }
 }
