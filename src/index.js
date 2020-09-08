@@ -141,12 +141,12 @@ const resolvers = {
   },
   Subscription: {
     post: {
-      subscribe(_, __) {
+      subscribe() {
         return pubsub.asyncIterator(["post"])
       }
     },
     comment: {
-      subscribe(_, { postId }, { pubsub }) {
+      subscribe(_, { postId }) {
         return pubsub.asyncIterator(`comment ${postId}`);
       }
     }
